@@ -1,5 +1,5 @@
 [package]
-name = "test-wasm"
+name = "burn-wasm-train"
 publish = false
 edition = "2021"
 

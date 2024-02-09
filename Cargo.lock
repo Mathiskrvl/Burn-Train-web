@@ -413,6 +413,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "burn-wasm-train"
+version = "0.0.0"
+dependencies = [
+ "burn",
+ "burn-wgpu",
+ "console_error_panic_hook",
+ "js-sys",
+ "log",
+ "serde",
+ "serde-wasm-bindgen",
+ "serde_json",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-logger",
+]
+
+[[package]]
 name = "burn-wgpu"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2755,23 +2772,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "06794f8f6c5c898b3275aebefa6b8a1cb24cd2c6c79397ab15774837a0bc5755"
 dependencies = [
  "winapi-util",
-]
-
-[[package]]
-name = "test-wasm"
-version = "0.0.0"
-dependencies = [
- "burn",
- "burn-wgpu",
- "console_error_panic_hook",
- "js-sys",
- "log",
- "serde",
- "serde-wasm-bindgen",
- "serde_json",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "wasm-logger",
 ]
 
 [[package]]

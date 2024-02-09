@@ -96,6 +96,7 @@ function passStringToWasm0(arg, malloc, realloc) {
         const ret = encodeString(arg, view);
 
         offset += ret.written;
+        ptr = realloc(ptr, len, offset, 1) >>> 0;
     }
 
     WASM_VECTOR_LEN = offset;
@@ -180,6 +181,12 @@ function debugString(val) {
     return className;
 }
 
+const CLOSURE_DTORS = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(state => {
+    wasm.__wbindgen_export_2.get(state.dtor)(state.a, state.b)
+});
+
 function makeMutClosure(arg0, arg1, dtor, f) {
     const state = { a: arg0, b: arg1, cnt: 1, dtor };
     const real = (...args) => {
@@ -194,14 +201,14 @@ function makeMutClosure(arg0, arg1, dtor, f) {
         } finally {
             if (--state.cnt === 0) {
                 wasm.__wbindgen_export_2.get(state.dtor)(a, state.b);
-
+                CLOSURE_DTORS.unregister(state);
             } else {
                 state.a = a;
             }
         }
     };
     real.original = state;
-
+    CLOSURE_DTORS.register(real, state, state);
     return real;
 }
 function __wbg_adapter_28(arg0, arg1, arg2) {
@@ -311,6 +318,9 @@ function __wbg_adapter_384(arg0, arg1, arg2, arg3) {
     wasm.wasm_bindgen__convert__closures__invoke2_mut__h98d2bb84c3fb6fff(arg0, arg1, addHeapObject(arg2), addHeapObject(arg3));
 }
 
+const ModelWebFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_modelweb_free(ptr >>> 0));
 /**
 */
 export class ModelWeb {
@@ -318,7 +328,7 @@ export class ModelWeb {
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
-
+        ModelWebFinalization.unregister(this);
         return ptr;
     }
 
@@ -362,6 +372,10 @@ export class ModelWeb {
         return takeObject(ret);
     }
 }
+
+const ModelWebWgpuFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_modelwebwgpu_free(ptr >>> 0));
 /**
 */
 export class ModelWebWgpu {
@@ -370,14 +384,14 @@ export class ModelWebWgpu {
         ptr = ptr >>> 0;
         const obj = Object.create(ModelWebWgpu.prototype);
         obj.__wbg_ptr = ptr;
-
+        ModelWebWgpuFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
 
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
-
+        ModelWebWgpuFinalization.unregister(this);
         return ptr;
     }
 
