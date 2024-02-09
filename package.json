@@ -1,0 +1,16 @@
+{
+  "name": "chess-web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "wasm": "build.bat",
+    "dev": "vite",
+    "build": "vite build",
+    "show": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.0.8",
+    "vite-plugin-top-level-await": "^1.4.1"
+  }
+}

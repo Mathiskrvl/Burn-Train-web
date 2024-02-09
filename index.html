@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Hello test-wasm!</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <label for="backend">Backend:</label>
+    <select id="backend">
+      <option value="ndarray" selected>CPU - Ndarray</option>
+      <option value="webgpu">GPU - WebGPU</option>
+    </select>
+    <h2>Entrée pour f(x) = sin(x)</h2>
+
+    <!-- Formulaire pour saisir x -->
+    <input type="number" id="inputX" placeholder="Entrez x">
+    <button id="calcul">Calculer f(x)</button>
+    <button id="calculg">Calculer g(x)</button>
+    <!-- Emplacement pour afficher le résultat -->
+    <div id="resultatFx"></div>
+    <div id="resultatGx"></div>
+
+
+    <button id="train">Begin train</button>
+    <canvas id="myChart"></canvas>
+
+    <!-- <input type="number" id="inputEpoch" placeholder="Entrez x">
+    <button id="train">Train g(x)</button>
+    <p>For now is just with Ndarray, look the console it's show the loss every 100 epoch</p> -->
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
