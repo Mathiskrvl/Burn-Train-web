@@ -5,7 +5,7 @@ This repo is an example of how we can train a model in the browser with WebAssem
 
 ## Overview
 
-This demo showcases how to execute an the training process in a web browser using a simple model.
+This demo showcases how to execute the training process in a web browser using a simple model.
 The project utilizes the Burn deep learning framework, WebGPU and WebAssembly.
 
 ## Running the Demo
