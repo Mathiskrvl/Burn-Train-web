@@ -43,3 +43,7 @@ npm run dev
 
 As of now, the WebGPU backend is compatible only with Chrome browsers running on macOS and Windows.
 The application will dynamically detect if WebGPU support is available and proceed accordingly.
+
+## Tune
+
+In the main.js you can test by changing the hidden_size variable like 128, i recommand to use WebGpu.

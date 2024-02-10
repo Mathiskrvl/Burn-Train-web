@@ -82,7 +82,6 @@ impl ModelWeb {
         let fdata = calculate_range(data.clone());
         let input = Tensor::from_data(Data::new(data, Shape::new([data_n; 1])), &self.device).unsqueeze_dim(1);
         let example = Tensor::from_data(Data::new(fdata, Shape::new([data_n; 1])), &self.device).unsqueeze_dim(1);
-        log::debug!("First step pass");
         for i in 0..epoch {
             let output = self.model.forward(input.clone());
             let loss =  MSELoss::new().forward(output, example.clone(), Reduction::Auto);
@@ -146,7 +145,6 @@ impl ModelWebWgpu {
         let fdata = calculate_range(data.clone());
         let input = Tensor::from_data(Data::new(data, Shape::new([data_n; 1])), &self.device).unsqueeze_dim(1);
         let example = Tensor::from_data(Data::new(fdata, Shape::new([data_n; 1])), &self.device).unsqueeze_dim(1);
-        log::debug!("First step pass");
         for i in 0..epoch {
             let output = self.model.forward(input.clone());
             let loss =  MSELoss::new().forward(output, example.clone(), Reduction::Auto);
@@ -164,155 +162,3 @@ impl ModelWebWgpu {
         }
     }
 }
-
-// #[wasm_bindgen]
-// pub struct NeuralNetwork {
-//     model: ModelType,
-// }
-
-// #[wasm_bindgen]
-// impl NeuralNetwork {
-//     #[wasm_bindgen(constructor)]
-//     pub fn new() -> Self {
-//         log::info!("Initializing the image classifier");
-//         let device = Default::default();
-//         Self {
-//             model: ModelType::WithNdArrayBackend(ModelConfig::new(4).init(&device)),
-//         }
-//     }
-
-//     pub async fn set_backend_ndarray(&mut self) -> Result<(), JsValue> {
-//         log::info!("Loading the model to the NdArray backend");
-//         let start = Instant::now();
-//         let device = Default::default();
-//         self.model = ModelType::WithNdArrayBackend(ModelConfig::new(4).init(&device));
-//         let duration = start.elapsed();
-//         log::debug!("Model is loaded to the NdArray backend in {:?}", duration);
-//         Ok(())
-//     }
-
-//     pub async fn set_backend_wgpu(&mut self) -> Result<(), JsValue> {
-//         log::info!("Loading the model to the Wgpu backend");
-//         let start = Instant::now();
-//         let device = Default::default();
-//         init_async::<AutoGraphicsApi>(&device).await;
-//         self.model = ModelType::WithWgpuBackend(ModelConfig::new(4).init(&device));
-//         let duration = start.elapsed();
-//         log::debug!("Model is loaded to the Wgpu backend in {:?}", duration);
-
-//         log::debug!("Warming up the model");
-//         let start = Instant::now();
-//         let _ = self.inference(&[1.;3]).await;
-//         let duration = start.elapsed();
-//         log::debug!("Warming up is completed in {:?}", duration);
-//         Ok(())
-//     }
-
-//     pub async fn inference(&self, input: &[f32]) -> Array {
-//         log::info!("Running inference");
-//         let start = Instant::now();
-//         let result = match self.model {
-//             ModelType::WithNdArrayBackend(ref model) => model.forward_web(input).await,
-//             ModelType::WithWgpuBackend(ref model) => model.forward_web(input).await,
-//         };
-//         let duration = start.elapsed();
-//         log::debug!("Inference is completed in {:?}", duration);
-//         // log::info!("{:#?}", result)
-//         let array = Array::new();
-//         for value in result {
-//             array.push(&value.into());
-//         }
-//         array
-//     }
-
-//     pub async fn train(&self, epoch: usize) {
-//         match self.model {
-//             ModelType::WithNdArrayBackend(ref model) => self.train_ndarray(epoch).await,
-//             ModelType::WithWgpuBackend(ref model) => self.train_wgpu(epoch).await,
-//         }
-//     }
-
-//     pub async fn train_wgpu(&self, epoch: usize) { 
-//         type MyBackend = Wgpu<AutoGraphicsApi, f32, i32>;
-//         type MyAutodiffBackend = Autodiff<MyBackend>;
-//         let device = Default::default();
-//         let mut model = ModelConfig::new(4).init::<MyAutodiffBackend>(&device);
-//         let mut optim = AdamConfig::new().init();
-//         let data = create_range(-10f32, 10f32, 1e-2);
-//         let data_n = data.len();
-//         let fdata = calculate_range(data.clone());
-//         let input = Tensor::from_data(Data::new(data, Shape::new([data_n; 1])), &device).unsqueeze_dim(1);
-//         let example = Tensor::from_data(Data::new(fdata, Shape::new([data_n; 1])), &device).unsqueeze_dim(1);
-//         log::info!("First step pass");
-//         for i in 0..epoch {
-//             let output = model.forward(input.clone());
-//             let loss =  MSELoss::new().forward(output, example.clone(), Reduction::Auto);
-//             if i % 100 == 0{
-//                 #[cfg(not(target_family = "wasm"))]
-//                 let scalar_loss = loss.clone().into_scalar();
-//                 #[cfg(target_family = "wasm")]
-//                 let scalar_loss = loss.clone().into_scalar().await;
-//                 log::info!("{:?}", scalar_loss);
-//             }
-//             let grads = loss.backward();
-//             let grads = GradientsParams::from_grads(grads, &model);
-//             model = optim.step(1e-4, model, grads);
-//         }
-//     }
-
-//     pub async fn train_ndarray(&self, epoch: usize) { 
-//         type MyBackend = NdArray<f32>;
-//         type MyAutodiffBackend = Autodiff<MyBackend>;
-//         let device = Default::default();
-//         let mut model = ModelConfig::new(4).init::<MyAutodiffBackend>(&device);
-//         let mut optim = AdamConfig::new().init();
-//         let data = create_range(-10f32, 10f32, 1e-2);
-//         let data_n = data.len();
-//         let fdata = calculate_range(data.clone());
-//         let input = Tensor::from_data(Data::new(data, Shape::new([data_n; 1])), &device).unsqueeze_dim(1);
-//         let example = Tensor::from_data(Data::new(fdata, Shape::new([data_n; 1])), &device).unsqueeze_dim(1);
-//         log::info!("First step pass");
-//         for i in 0..epoch {
-//             let output = model.forward(input.clone());
-//             let loss =  MSELoss::new().forward(output, example.clone(), Reduction::Auto);
-//             if i % 100 == 0{
-//                 #[cfg(not(target_family = "wasm"))]
-//                 let scalar_loss = loss.clone().into_scalar();
-//                 #[cfg(target_family = "wasm")]
-//                 let scalar_loss = loss.clone().into_scalar().await;
-//                 log::info!("{:?}", scalar_loss);
-//             }
-//             let grads = loss.backward();
-//             let grads = GradientsParams::from_grads(grads, &model);
-//             model = optim.step(1e-4, model, grads);
-//         }
-//     }
-// }
-
-// pub async fn train(epoch: usize) { 
-//     type MyBackend = NdArray<f32>;
-//     type MyAutodiffBackend = Autodiff<MyBackend>;
-//     let device = Default::default();
-//     let mut model = ModelConfig::new(4).init::<MyAutodiffBackend>(&device);
-//     let mut optim = AdamConfig::new().init();
-//     let data = create_range(-10f32, 10f32, 1e-2);
-//     let data_n = data.len();
-//     let fdata = calculate_range(data.clone());
-//     let input = Tensor::from_data(Data::new(data, Shape::new([data_n; 1])), &device).unsqueeze_dim(1);
-//     let example = Tensor::from_data(Data::new(fdata, Shape::new([data_n; 1])), &device).unsqueeze_dim(1);
-//     log::info!("First step pass");
-//     for i in 0..epoch {
-//         let output = model.forward(input.clone());
-//         let loss =  MSELoss::new().forward(output, example.clone(), Reduction::Auto);
-//         if i % 100 == 0{
-//             #[cfg(not(target_family = "wasm"))]
-//             let scalar_loss = loss.clone().into_scalar();
-//             #[cfg(target_family = "wasm")]
-//             let scalar_loss = loss.clone().into_scalar().await;
-//             log::info!("{:?}", scalar_loss);
-//         }
-//         let grads = loss.backward();
-//         let grads = GradientsParams::from_grads(grads, &model);
-//         model = optim.step(1e-4, model, grads);
-//     }
-// }
