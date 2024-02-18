@@ -1,4 +1,5 @@
 # Burn-Train-web
+
 This repo is an example of how we can train a model in the browser with WebAssembly.
 
 [![Live Demo](https://img.shields.io/badge/live-demo-brightgreen)](https://mathiskrvl.github.io/Burn-Train-web/)
